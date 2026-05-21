@@ -179,5 +179,4 @@ Máster en Bioinformática (UNIR)
 
 ---
 
-Ahí es donde realmente sacas ventaja.
 
