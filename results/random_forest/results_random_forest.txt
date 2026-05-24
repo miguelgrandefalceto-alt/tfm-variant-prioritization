@@ -1,0 +1,34 @@
+Modelo: random_forest
+================================================================================
+
+Mejores hiperparámetros:
+{
+    "classifier__max_depth": null,
+    "classifier__max_features": "sqrt",
+    "classifier__min_samples_leaf": 1,
+    "classifier__min_samples_split": 4,
+    "classifier__n_estimators": 334
+}
+
+Mejor score de validación cruzada (f1_macro): 0.96989
+
+Resultados en conjunto de test:
+Accuracy: 0.97014
+Precision macro: 0.97024
+Recall macro: 0.97014
+F1 macro: 0.97014
+
+Matriz de confusión:
+[[6740  260]
+ [ 158 6842]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0     0.9771    0.9629    0.9699      7000
+           1     0.9634    0.9774    0.9704      7000
+
+    accuracy                         0.9701     14000
+   macro avg     0.9702    0.9701    0.9701     14000
+weighted avg     0.9702    0.9701    0.9701     14000
+

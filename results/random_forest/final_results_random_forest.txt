@@ -1,0 +1,31 @@
+Modelo final: random_forest
+================================================================================
+
+Configuración final del modelo:
+{'bootstrap': True, 'ccp_alpha': 0.0, 'class_weight': 'balanced', 'criterion': 'gini', 'max_depth': None, 'max_features': 'sqrt', 'max_leaf_nodes': None, 'max_samples': None, 'min_impurity_decrease': 0.0, 'min_samples_leaf': 1, 'min_samples_split': 4, 'min_weight_fraction_leaf': 0.0, 'monotonic_cst': None, 'n_estimators': 334, 'n_jobs': -1, 'oob_score': False, 'random_state': 42, 'verbose': 0, 'warm_start': False}
+
+Tiempo de entrenamiento: 0.36 minutos
+
+Resultados en conjunto de test:
+Accuracy: 0.97014
+Precision macro: 0.97024
+Recall macro: 0.97014
+F1 macro: 0.97014
+Precision weighted: 0.97024
+Recall weighted: 0.97014
+F1 weighted: 0.97014
+
+Matriz de confusión:
+[[6740  260]
+ [ 158 6842]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0     0.9771    0.9629    0.9699      7000
+           1     0.9634    0.9774    0.9704      7000
+
+    accuracy                         0.9701     14000
+   macro avg     0.9702    0.9701    0.9701     14000
+weighted avg     0.9702    0.9701    0.9701     14000
+
