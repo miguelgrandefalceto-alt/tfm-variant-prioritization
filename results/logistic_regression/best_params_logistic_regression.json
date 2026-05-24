@@ -1,0 +1,4 @@
+{
+    "classifier__C": 10,
+    "classifier__penalty": "l2"
+}
