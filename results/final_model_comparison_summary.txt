@@ -1,0 +1,8 @@
+Comparación final de modelos entrenados con hiperparámetros optimizados
+====================================================================================================
+
+              model  test_accuracy  test_precision_macro  test_recall_macro  test_f1_macro  test_precision_weighted  test_recall_weighted  test_f1_weighted           confusion_matrix  training_time_minutes
+logistic_regression        0.97207               0.97218            0.97207        0.97207                  0.97218               0.97207           0.97207 [[6751, 249], [142, 6858]]                   0.20
+      random_forest        0.97014               0.97024            0.97014        0.97014                  0.97024               0.97014           0.97014 [[6740, 260], [158, 6842]]                   0.36
+            xgboost        0.97014               0.97020            0.97014        0.97014                  0.97020               0.97014           0.97014 [[6752, 248], [170, 6830]]                   0.20
+         svm_linear        0.97007               0.97052            0.97007        0.97006                  0.97052               0.97007           0.97006 [[6682, 318], [101, 6899]]                   0.00
