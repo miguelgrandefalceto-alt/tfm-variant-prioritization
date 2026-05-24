@@ -1,0 +1,35 @@
+Modelo: xgboost
+================================================================================
+
+Mejores hiperparámetros:
+{
+    "classifier__colsample_bytree": 0.8123620356542087,
+    "classifier__learning_rate": 0.17254716573280354,
+    "classifier__max_depth": 5,
+    "classifier__n_estimators": 221,
+    "classifier__reg_lambda": 1.5751320499779735,
+    "classifier__subsample": 0.7468055921327309
+}
+
+Mejor score de validación cruzada (f1_macro): 0.97014
+
+Resultados en conjunto de test:
+Accuracy: 0.97014
+Precision macro: 0.97020
+Recall macro: 0.97014
+F1 macro: 0.97014
+
+Matriz de confusión:
+[[6752  248]
+ [ 170 6830]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0     0.9754    0.9646    0.9700      7000
+           1     0.9650    0.9757    0.9703      7000
+
+    accuracy                         0.9701     14000
+   macro avg     0.9702    0.9701    0.9701     14000
+weighted avg     0.9702    0.9701    0.9701     14000
+
