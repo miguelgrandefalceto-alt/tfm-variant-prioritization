@@ -1,0 +1,32 @@
+Modelo: svm_linear
+================================================================================
+
+Mejores hiperparámetros:
+{
+    "classifier__alpha": 0.0001,
+    "classifier__learning_rate": "optimal",
+    "classifier__penalty": "l2"
+}
+
+Mejor score de validación cruzada (f1_macro): 0.96989
+
+Resultados en conjunto de test:
+Accuracy: 0.97007
+Precision macro: 0.97052
+Recall macro: 0.97007
+F1 macro: 0.97006
+
+Matriz de confusión:
+[[6682  318]
+ [ 101 6899]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0     0.9851    0.9546    0.9696      7000
+           1     0.9559    0.9856    0.9705      7000
+
+    accuracy                         0.9701     14000
+   macro avg     0.9705    0.9701    0.9701     14000
+weighted avg     0.9705    0.9701    0.9701     14000
+

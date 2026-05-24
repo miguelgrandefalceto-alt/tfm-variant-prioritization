@@ -1,0 +1,5 @@
+{
+    "classifier__alpha": 0.0001,
+    "classifier__learning_rate": "optimal",
+    "classifier__penalty": "l2"
+}
