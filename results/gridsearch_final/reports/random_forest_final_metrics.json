@@ -1,0 +1,10 @@
+{
+    "model": "Random Forest",
+    "accuracy": 0.9697142857142858,
+    "precision_macro": 0.9698220187796532,
+    "recall_macro": 0.9697142857142858,
+    "f1_macro": 0.969712549439824,
+    "precision_weighted": 0.9698220187796531,
+    "recall_weighted": 0.9697142857142858,
+    "f1_weighted": 0.9697125494398241
+}

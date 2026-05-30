@@ -1,0 +1,5 @@
+model,best_cv_f1_macro,test_accuracy,test_precision_macro,test_recall_macro,test_f1_macro,confusion_matrix,best_params,training_time_minutes
+logistic_regression,0.9703,0.97207,0.97218,0.97207,0.97207,"[[6751, 249], [142, 6858]]","{'classifier__C': 10, 'classifier__penalty': 'l2'}",1.03
+random_forest,0.96989,0.97014,0.97024,0.97014,0.97014,"[[6740, 260], [158, 6842]]","{'classifier__max_depth': None, 'classifier__max_features': 'sqrt', 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 4, 'classifier__n_estimators': 334}",2.17
+xgboost,0.97014,0.97014,0.9702,0.97014,0.97014,"[[6752, 248], [170, 6830]]","{'classifier__colsample_bytree': 0.8123620356542087, 'classifier__learning_rate': 0.17254716573280354, 'classifier__max_depth': 5, 'classifier__n_estimators': 221, 'classifier__reg_lambda': 1.5751320499779735, 'classifier__subsample': 0.7468055921327309}",0.36
+svm_linear,0.96989,0.97007,0.97052,0.97007,0.97006,"[[6682, 318], [101, 6899]]","{'classifier__alpha': 0.0001, 'classifier__learning_rate': 'optimal', 'classifier__penalty': 'l2'}",0.04

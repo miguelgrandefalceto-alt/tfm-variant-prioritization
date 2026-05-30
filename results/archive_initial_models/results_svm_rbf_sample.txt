@@ -1,0 +1,22 @@
+SVM RBF con muestra reducida
+============================================================
+
+Muestra: 15000 variantes
+Accuracy: 0.96533
+
+Matriz de confusión:
+[[1433   67]
+ [  37 1463]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0       0.97      0.96      0.96      1500
+           1       0.96      0.98      0.97      1500
+
+    accuracy                           0.97      3000
+   macro avg       0.97      0.97      0.97      3000
+weighted avg       0.97      0.97      0.97      3000
+
+Tiempo de entrenamiento: 0.03 minutos
+Tiempo total: 0.04 minutos

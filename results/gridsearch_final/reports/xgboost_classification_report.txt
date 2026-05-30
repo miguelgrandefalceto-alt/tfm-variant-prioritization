@@ -1,0 +1,19 @@
+Model: XGBoost
+
+Classification report
+=====================
+
+                              precision    recall  f1-score   support
+
+        Benign/Likely benign     0.9742    0.9653    0.9697      7000
+Pathogenic/Likely pathogenic     0.9656    0.9744    0.9700      7000
+
+                    accuracy                         0.9699     14000
+                   macro avg     0.9699    0.9699    0.9699     14000
+                weighted avg     0.9699    0.9699    0.9699     14000
+
+
+Confusion matrix
+================
+[[6757  243]
+ [ 179 6821]]

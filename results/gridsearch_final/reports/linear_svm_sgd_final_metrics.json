@@ -1,0 +1,10 @@
+{
+    "model": "Linear SVM - SGDClassifier",
+    "accuracy": 0.9666428571428571,
+    "precision_macro": 0.9675421506153745,
+    "recall_macro": 0.9666428571428571,
+    "f1_macro": 0.9666268092354267,
+    "precision_weighted": 0.9675421506153745,
+    "recall_weighted": 0.9666428571428571,
+    "f1_weighted": 0.9666268092354267
+}

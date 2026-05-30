@@ -1,0 +1,19 @@
+Model: Random Forest
+
+Classification report
+=====================
+
+                              precision    recall  f1-score   support
+
+        Benign/Likely benign     0.9769    0.9621    0.9695      7000
+Pathogenic/Likely pathogenic     0.9627    0.9773    0.9699      7000
+
+                    accuracy                         0.9697     14000
+                   macro avg     0.9698    0.9697    0.9697     14000
+                weighted avg     0.9698    0.9697    0.9697     14000
+
+
+Confusion matrix
+================
+[[6735  265]
+ [ 159 6841]]

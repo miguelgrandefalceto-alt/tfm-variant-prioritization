@@ -1,0 +1,19 @@
+Model: Linear SVM - SGDClassifier
+
+Classification report
+=====================
+
+                              precision    recall  f1-score   support
+
+        Benign/Likely benign     0.9880    0.9447    0.9659      7000
+Pathogenic/Likely pathogenic     0.9470    0.9886    0.9674      7000
+
+                    accuracy                         0.9666     14000
+                   macro avg     0.9675    0.9666    0.9666     14000
+                weighted avg     0.9675    0.9666    0.9666     14000
+
+
+Confusion matrix
+================
+[[6613  387]
+ [  80 6920]]

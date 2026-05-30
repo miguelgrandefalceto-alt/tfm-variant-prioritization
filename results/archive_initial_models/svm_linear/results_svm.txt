@@ -1,0 +1,22 @@
+SVM lineal eficiente
+Modelo: SGDClassifier(loss='hinge')
+============================================================
+
+Accuracy: 0.97007
+
+Matriz de confusión:
+[[6682  318]
+ [ 101 6899]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0       0.99      0.95      0.97      7000
+           1       0.96      0.99      0.97      7000
+
+    accuracy                           0.97     14000
+   macro avg       0.97      0.97      0.97     14000
+weighted avg       0.97      0.97      0.97     14000
+
+Tiempo de entrenamiento: 0.01 minutos
+Tiempo total del proceso: 0.01 minutos

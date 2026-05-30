@@ -1,0 +1,10 @@
+{
+    "model": "Logistic Regression",
+    "best_params": {
+        "model__C": 10,
+        "model__class_weight": null,
+        "model__penalty": "l2",
+        "model__solver": "saga"
+    },
+    "best_cv_f1_macro": 0.9701413288482866
+}
