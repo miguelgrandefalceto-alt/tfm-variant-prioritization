@@ -1,23 +1,23 @@
 # TFM – Priorización de variantes patogénicas mediante Machine Learning
 
-Este proyecto implementa un pipeline bioinformático reproducible para la construcción de un dataset de variantes genéticas y el entrenamiento de modelos de aprendizaje automático orientados a la priorización de variantes potencialmente patogénicas en el contexto de la genómica clínica y las enfermedades raras.
+Este proyecto implementa un pipeline bioinformático reproducible para la construcción de un conjunto de datos de variantes genéticas y el entrenamiento de modelos de aprendizaje automático orientados a la priorización de variantes potencialmente patogénicas en el contexto de la genómica clínica y las enfermedades raras.
 
-El flujo de trabajo integra datos clínicos públicos procedentes de ClinVar, anotación funcional mediante Ensembl Variant Effect Predictor (VEP) y modelos de clasificación supervisada para diferenciar variantes benignas y patogénicas.
+El flujo de trabajo integra datos clínicos públicos procedentes de ClinVar, anotación funcional mediante Ensembl Variant Effect Predictor (VEP) y modelos de clasificación supervisada para diferenciar variantes benignas/probablemente benignas y patogénicas/probablemente patogénicas.
 
 ---
 
 ## Objetivo
 
-El objetivo principal del proyecto es desarrollar un pipeline de análisis reproducible que permita construir un dataset anotado de variantes genéticas y evaluar distintos modelos de machine learning para la clasificación binaria de variantes benignas y patogénicas.
+El objetivo principal del proyecto es desarrollar un pipeline de análisis reproducible que permita construir un conjunto de datos anotado de variantes genéticas y evaluar distintos modelos de machine learning para la clasificación binaria de variantes benignas y patogénicas.
 
 Los objetivos específicos son:
 
-* Construir un dataset de variantes genéticas a partir de ClinVar.
-* Filtrar variantes con significancia clínica claramente definida.
+* Construir un conjunto de datos de variantes genéticas a partir de ClinVar.
+* Filtrar variantes con clasificación clínica claramente definida.
 * Integrar información clínica, genómica y funcional.
 * Anotar funcionalmente las variantes mediante VEP.
-* Preparar un dataset final apto para modelos de machine learning.
-* Entrenar, optimizar y comparar distintos clasificadores.
+* Preparar un conjunto de datos final apto para modelos de machine learning.
+* Entrenar, optimizar y comparar distintos clasificadores supervisados.
 * Evaluar el rendimiento de los modelos sobre un conjunto de prueba independiente.
 * Mantener un flujo de trabajo reproducible y documentado.
 
@@ -27,43 +27,85 @@ Los objetivos específicos son:
 
 El pipeline consta de las siguientes etapas:
 
-### 1. Extracción de datos desde ClinVar
+### 1. Obtención de datos desde ClinVar
 
-Se parte de datos públicos de ClinVar en formato VCF. A partir de estos archivos se extraen variantes genéticas junto con información clínica relevante.
+Se partió de datos públicos procedentes de ClinVar. El procesamiento inicial se realizó a partir de un archivo tabular derivado de ClinVar, denominado `clinvar_snps_all.tsv`, que contenía información básica de las variantes, incluyendo cromosoma, posición, alelo de referencia, alelo alternativo, clasificación clínica, tipo de variante y anotación molecular inicial.
 
 Tareas principales:
 
-* Procesamiento inicial de archivos VCF.
-* Selección de variantes tipo SNP.
+* Procesamiento inicial de registros procedentes de ClinVar.
+* Selección de variantes de un solo nucleótido.
 * Extracción de campos clínicos y genómicos relevantes.
+* Preparación de archivos intermedios para el filtrado, balanceo y anotación funcional.
 
-### 2. Filtrado por significancia clínica
+### 2. Filtrado por clasificación clínica
 
-Se seleccionaron únicamente variantes con clasificación clínica clara:
+Se seleccionaron únicamente variantes con clasificación clínica compatible con una definición binaria clara.
 
-* Pathogenic / Likely pathogenic.
-* Benign / Likely benign.
+Etiquetas incluidas en la clase patogénica:
 
-Se excluyeron variantes con significado incierto, como las clasificadas como VUS, para reducir la ambigüedad de la variable objetivo durante el entrenamiento supervisado.
+* `Pathogenic`
+* `Likely_pathogenic`
+* `Pathogenic/Likely_pathogenic`
+
+Etiquetas incluidas en la clase benigna:
+
+* `Benign`
+* `Likely_benign`
+* `Benign/Likely_benign`
+
+Se excluyeron variantes de significado incierto, clasificaciones conflictivas, ambiguas o no adecuadas para una etiqueta binaria robusta.
 
 ### 3. Construcción de la variable objetivo
 
-Se definió una clasificación binaria:
+Se definió una clasificación binaria mediante la variable `label`:
 
 * `1` → variante patogénica o probablemente patogénica.
 * `0` → variante benigna o probablemente benigna.
 
-### 4. Balanceo del dataset
+La variable original `clnsig` se conservó como información de referencia durante la construcción del conjunto de datos, pero se excluyó del entrenamiento para evitar fuga de información.
 
-Para evitar un desequilibrio entre clases, se construyó un dataset balanceado:
+### 4. Limpieza, filtrado funcional y control de duplicados
 
-* 35.000 variantes clase 1.
-* 35.000 variantes clase 0.
+Durante la construcción del conjunto de datos se eliminaron duplicados exactos utilizando como criterio la combinación de las columnas:
+
+* `chr`
+* `pos`
+* `ref`
+* `alt`
+
+También se filtraron variantes según su consecuencia molecular inicial, conservando las siguientes categorías:
+
+* `missense_variant`
+* `synonymous_variant`
+* `splice_donor_variant`
+* `splice_acceptor_variant`
+* `nonsense`
+* `stop_gained`
+
+El conjunto final no presentó duplicados por identificador de variante ni por combinación de coordenada genómica y alelos.
+
+Además, se verificó que todas las variantes correspondían a variantes de un solo nucleótido. Esta comprobación se realizó mediante la variable `clnvc`, en la que todas las observaciones aparecían anotadas como `single_nucleotide_variant`, y mediante la comprobación de que los alelos de referencia y alternativo presentaban longitud de una base en todos los casos.
+
+### 5. Balanceo del conjunto de datos
+
+Para evitar un desequilibrio entre clases, se construyó un conjunto balanceado mediante muestreo aleatorio reproducible con `random_state=42`.
+
+Distribución final:
+
+* 35.000 variantes benignas/probablemente benignas.
+* 35.000 variantes patogénicas/probablemente patogénicas.
 * Tamaño total: 70.000 variantes.
 
-Además, se comprobó que no existían variantes duplicadas en el dataset final.
+El conjunto balanceado inicial se guardó como:
 
-### 5. Anotación funcional con VEP
+```text
+dataset_v1_balanced.csv
+```
+
+Posteriormente, este archivo se convirtió a formato VCF para su anotación funcional mediante VEP.
+
+### 6. Anotación funcional con VEP
 
 Las variantes seleccionadas se anotaron mediante Ensembl Variant Effect Predictor.
 
@@ -78,23 +120,31 @@ Variables funcionales extraídas:
 
 * Gen (`SYMBOL`).
 * Consecuencia funcional.
-* Impacto.
+* Impacto funcional.
 * SIFT.
 * PolyPhen.
 
-### 6. Ingeniería de características
+Tras procesar la salida de VEP y combinarla con la información clínica inicial, se generó el conjunto final utilizado para machine learning:
 
-Se procesaron las variables clínicas y funcionales para construir un dataset apto para machine learning.
+```text
+Data/dataset_ml_ready.csv
+```
+
+### 7. Preparación de variables para machine learning
+
+Se procesaron las variables clínicas, genómicas y funcionales para construir un conjunto de datos apto para modelos de clasificación supervisada.
 
 Variables predictoras utilizadas:
 
 * Variables numéricas:
+
   * `pos`
   * `impact_num`
   * `sift_score`
   * `polyphen_score`
 
 * Variables categóricas:
+
   * `chr`
   * `ref`
   * `alt`
@@ -111,9 +161,11 @@ Variables excluidas del entrenamiento:
 
 La variable `label` se utilizó como variable objetivo, mientras que `variant` y `clnsig` se excluyeron para evitar fuga de información durante el entrenamiento.
 
-### 7. Dataset final
+---
 
-El dataset final utilizado para el entrenamiento se encuentra en:
+## Conjunto de datos final
+
+El conjunto de datos final utilizado para el entrenamiento y evaluación de los modelos se encuentra en:
 
 ```text
 Data/dataset_ml_ready.csv
@@ -125,7 +177,28 @@ Características principales:
 * 14 columnas.
 * 35.000 variantes benignas o probablemente benignas.
 * 35.000 variantes patogénicas o probablemente patogénicas.
+* Todas las variantes corresponden a `single_nucleotide_variant`.
 * Sin variantes duplicadas.
+* Variable objetivo binaria: `label`.
+
+Columnas del conjunto final:
+
+```text
+variant
+chr
+pos
+ref
+alt
+clnsig
+label
+clnvc
+consequence
+gene
+impact_num
+sift_score
+polyphen_score
+Consequence_group
+```
 
 ---
 
@@ -138,35 +211,26 @@ Se entrenaron y compararon cuatro modelos de clasificación supervisada:
 * XGBoost.
 * SVM lineal eficiente.
 
-La regresión logística se utilizó como modelo base interpretable. Random Forest y XGBoost se incorporaron como modelos basados en árboles, capaces de capturar relaciones no lineales entre variables. Finalmente, se añadió una SVM lineal eficiente para ampliar la comparación con un modelo de margen máximo.
+La regresión logística se utilizó como modelo lineal interpretable. Random Forest y XGBoost se incorporaron como modelos basados en árboles, capaces de capturar relaciones no lineales entre variables. Finalmente, se añadió una SVM lineal eficiente para ampliar la comparación con un modelo basado en margen máximo.
 
-La SVM lineal se implementó mediante `SGDClassifier(loss="hinge")`, ya que una implementación tradicional con matriz densa resultaba computacionalmente costosa tras la codificación one-hot de las variables categóricas.
+La SVM lineal se implementó mediante `SGDClassifier`, ya que una implementación tradicional con matriz densa resultaba computacionalmente costosa tras la codificación one-hot de las variables categóricas.
 
-También se realizó una prueba exploratoria con SVM RBF sobre una muestra estratificada reducida. Sin embargo, el modelo principal considerado en la comparación final fue la SVM lineal eficiente, debido a su menor coste computacional y a su rendimiento competitivo.
+También se realizó una prueba exploratoria con SVM RBF sobre una muestra estratificada reducida. Sin embargo, el modelo principal considerado en la comparación final fue la SVM lineal eficiente, debido a su menor coste computacional y a su compatibilidad con datos de alta dimensionalidad.
 
 ---
 
 ## Optimización de hiperparámetros
 
-Además del entrenamiento inicial de los modelos, se realizó una optimización moderada de hiperparámetros.
+La optimización final de hiperparámetros se realizó mediante `GridSearchCV` para los cuatro modelos evaluados.
 
 La estrategia seguida fue:
 
 * Mantener una única división estratificada entrenamiento/prueba común para todos los modelos.
+* Dividir el conjunto de datos en 56.000 variantes para entrenamiento y 14.000 variantes para prueba.
 * Optimizar hiperparámetros únicamente sobre el conjunto de entrenamiento.
-* Utilizar validación cruzada con 3 folds.
+* Utilizar validación cruzada estratificada de 3 particiones.
 * Seleccionar la mejor configuración según `f1_macro`.
-* Evaluar los modelos finales una única vez sobre el conjunto de prueba.
-
-Métodos utilizados:
-
-* `GridSearchCV` para:
-  * Regresión logística.
-  * SVM lineal.
-
-* `RandomizedSearchCV` para:
-  * Random Forest.
-  * XGBoost.
+* Evaluar los modelos finales sobre un conjunto de prueba independiente no utilizado durante la optimización.
 
 El uso de `Pipeline` y `ColumnTransformer` permitió encapsular el preprocesamiento y evitar fuga de información durante la validación cruzada.
 
@@ -174,19 +238,26 @@ El preprocesamiento incluyó:
 
 * Imputación de valores ausentes en variables numéricas mediante la mediana.
 * Escalado de variables numéricas mediante `StandardScaler`.
-* Imputación de valores ausentes en variables categóricas con la categoría `"missing"`.
-* Codificación one-hot de variables categóricas mediante `OneHotEncoder(handle_unknown="ignore", sparse_output=True)`.
+* Imputación de valores ausentes en variables categóricas.
+* Codificación one-hot de variables categóricas mediante `OneHotEncoder(handle_unknown="ignore")`.
+
+Los resultados de la optimización final se almacenan en:
+
+```text
+results/gridsearch_final/
+```
 
 ---
 
 ## Mejores hiperparámetros seleccionados
 
-Tras la optimización, se seleccionaron los siguientes hiperparámetros para los modelos finales:
+Tras la optimización mediante `GridSearchCV`, se seleccionaron los siguientes hiperparámetros para los modelos finales:
 
 ### Regresión logística
 
 ```text
 C = 10
+class_weight = None
 penalty = l2
 solver = saga
 ```
@@ -194,53 +265,60 @@ solver = saga
 ### Random Forest
 
 ```text
-n_estimators = 334
+class_weight = None
 max_depth = None
 max_features = sqrt
 min_samples_leaf = 1
 min_samples_split = 4
-class_weight = balanced
+n_estimators = 200
 ```
 
 ### XGBoost
 
 ```text
-n_estimators = 221
+colsample_bytree = 0.8
+learning_rate = 0.2
 max_depth = 5
-learning_rate = 0.17254716573280354
-subsample = 0.7468055921327309
-colsample_bytree = 0.8123620356542087
-reg_lambda = 1.5751320499779735
+n_estimators = 250
+reg_lambda = 1
+subsample = 0.8
 ```
 
 ### SVM lineal eficiente
 
 ```text
-loss = hinge
-alpha = 0.0001
-penalty = l2
-learning_rate = optimal
+alpha = 1e-05
 class_weight = balanced
+learning_rate = optimal
+loss = hinge
+penalty = l2
 ```
 
 ---
 
 ## Resultados finales
 
-Tras la optimización de hiperparámetros, los modelos finales se entrenaron sobre el conjunto completo de entrenamiento y se evaluaron sobre el conjunto de prueba.
+Tras la optimización de hiperparámetros, los mejores modelos se evaluaron sobre el conjunto de prueba independiente.
 
-| Modelo | Accuracy | Precision macro | Recall macro | F1 macro |
-|---|---:|---:|---:|---:|
-| Regresión logística | 0.9721 | 0.9722 | 0.9721 | 0.9721 |
-| Random Forest | 0.9701 | 0.9702 | 0.9701 | 0.9701 |
-| XGBoost | 0.9701 | 0.9702 | 0.9701 | 0.9701 |
-| SVM lineal | 0.9701 | 0.9705 | 0.9701 | 0.9701 |
+| Modelo               | CV F1-macro | Accuracy test | Precision macro | Recall macro | F1-macro test |
+| -------------------- | ----------: | ------------: | --------------: | -----------: | ------------: |
+| Regresión logística  |      0.9701 |        0.9721 |          0.9722 |       0.9721 |        0.9721 |
+| XGBoost              |      0.9702 |        0.9699 |          0.9699 |       0.9699 |        0.9699 |
+| Random Forest        |      0.9698 |        0.9697 |          0.9698 |       0.9697 |        0.9697 |
+| SVM lineal eficiente |      0.9698 |        0.9666 |          0.9675 |       0.9666 |        0.9666 |
 
-La regresión logística obtuvo el mejor rendimiento global en el conjunto de prueba, aunque las diferencias entre modelos fueron reducidas. Esto sugiere que las variables funcionales y clínicas seleccionadas contienen una señal discriminativa suficiente para separar eficazmente variantes benignas y patogénicas.
+La regresión logística obtuvo el mejor rendimiento global en el conjunto de prueba, con una accuracy y un F1-macro de aproximadamente 0,9721. No obstante, las diferencias entre regresión logística, XGBoost y Random Forest fueron reducidas, por lo que no debe interpretarse como una superioridad clara o absoluta de un único modelo.
 
 ---
 
 ## Matrices de confusión finales
+
+Las matrices de confusión se presentan en el formato:
+
+```text
+[[Verdaderos benignos, Falsos positivos],
+ [Falsos negativos, Verdaderos patogénicos]]
+```
 
 ### Regresión logística
 
@@ -252,47 +330,62 @@ La regresión logística obtuvo el mejor rendimiento global en el conjunto de pr
 ### Random Forest
 
 ```text
-[[6740, 260],
- [158, 6842]]
+[[6735, 265],
+ [159, 6841]]
 ```
 
 ### XGBoost
 
 ```text
-[[6752, 248],
- [170, 6830]]
+[[6757, 243],
+ [179, 6821]]
 ```
 
 ### SVM lineal eficiente
 
 ```text
-[[6682, 318],
- [101, 6899]]
+[[6613, 387],
+ [80, 6920]]
 ```
 
 ---
 
 ## Interpretación de resultados
 
-Todos los modelos evaluados alcanzaron métricas elevadas y muy similares. La regresión logística obtuvo el mejor rendimiento global, con una accuracy y un F1-score macro de 0,9721.
+Todos los modelos evaluados alcanzaron métricas elevadas, con valores de F1-macro superiores a 0,966 en el conjunto de prueba. La regresión logística obtuvo el mejor rendimiento global, aunque las diferencias con XGBoost y Random Forest fueron pequeñas.
 
-Este resultado indica que las variables utilizadas, especialmente aquellas relacionadas con la consecuencia funcional, el impacto de la variante y los predictores in silico, permiten una separación robusta entre variantes benignas y patogénicas.
+XGBoost obtuvo el valor medio de F1-macro más alto durante la validación cruzada, pero no alcanzó el mejor rendimiento en el conjunto de prueba independiente. Esto refuerza la importancia de evaluar los modelos optimizados sobre datos no utilizados durante el ajuste de hiperparámetros.
 
-La SVM lineal mostró el menor número de falsos negativos para la clase patogénica. Este comportamiento puede ser relevante en un contexto de priorización de variantes, donde puede ser preferible minimizar la pérdida de variantes potencialmente patogénicas, aunque aumente el número de falsos positivos.
+La SVM lineal eficiente obtuvo el menor rendimiento global, pero presentó el menor número de falsos negativos para variantes patogénicas: 80, frente a 142 en regresión logística, 159 en Random Forest y 179 en XGBoost. Este comportamiento puede ser relevante en un contexto de priorización de variantes, donde puede ser preferible reducir la pérdida de variantes potencialmente patogénicas, aunque ello implique aumentar el número de falsos positivos.
 
-Los resultados completos se almacenan en:
+En conjunto, los resultados indican que las variables genómicas, funcionales y de anotación utilizadas contienen una señal discriminativa suficiente para diferenciar variantes benignas y patogénicas en el conjunto de datos construido. Sin embargo, estos resultados deben interpretarse teniendo en cuenta las limitaciones del conjunto de datos, especialmente el uso de variantes procedentes de ClinVar, el balanceo artificial y la ausencia de validación externa independiente.
+
+---
+
+## Archivos de resultados
+
+Los resultados finales de la optimización mediante `GridSearchCV` se almacenan en:
 
 ```text
-results/final_model_comparison_summary.csv
-results/final_model_comparison_summary.txt
-results/final_model_comparison_summary_excel.csv
+results/gridsearch_final/
 ```
 
-Las predicciones finales se almacenan en:
+Esta carpeta incluye:
 
 ```text
+final_gridsearch_model_comparison_summary.csv
+best_params/
+cv_results/
+reports/
 predictions/
 ```
+
+Archivo comparativo principal:
+
+```text
+results/gridsearch_final/final_gridsearch_model_comparison_summary.csv
+```
+
 ---
 
 ## Estructura del repositorio
@@ -307,25 +400,23 @@ TFM/
 │   ├── clean_clinvar.py
 │   ├── csv_to_vcf.py
 │   ├── encode_dataset.py
+│   ├── gridsearch_final_models.py
 │   ├── merge_ml_dataset.py
 │   ├── process_vep.py
+│   ├── train_final_models.py
 │   ├── train_logreg.py
 │   ├── train_rf.py
-│   ├── train_xgboost.py
 │   ├── train_svm.py
 │   ├── train_svm_rbf_sample.py
-│   ├── optimize_models.py
-│   └── train_final_models.py
+│   └── train_xgboost.py
 │
 ├── results/
+│   ├── gridsearch_final/
 │   ├── logistic_regression/
 │   ├── random_forest/
 │   ├── svm_linear/
 │   ├── svm_rbf_sample/
-│   ├── xgboost/
-│   ├── final_model_comparison_summary.csv
-│   ├── final_model_comparison_summary_excel.csv
-│   └── final_model_comparison_summary.txt
+│   └── xgboost/
 │
 ├── predictions/
 │   ├── logistic_regression/
@@ -336,20 +427,21 @@ TFM/
 ├── README.md
 └── requirements.txt
 ```
+
 ---
 
 ## Scripts principales
 
-### Construcción y procesamiento del dataset
+### Construcción y procesamiento del conjunto de datos
 
-* `build_dataset_v1.py`: construye el dataset inicial.
 * `clean_clinvar.py`: limpia y filtra variantes procedentes de ClinVar.
+* `build_dataset_v1.py`: construye el conjunto inicial balanceado.
 * `csv_to_vcf.py`: convierte variantes seleccionadas a formato VCF.
 * `process_vep.py`: procesa la salida de VEP.
 * `merge_ml_dataset.py`: fusiona información clínica, genómica y funcional.
-* `encode_dataset.py`: prepara el dataset final para machine learning.
+* `encode_dataset.py`: prepara versiones codificadas del conjunto de datos.
 
-### Entrenamiento inicial de modelos
+### Entrenamiento inicial y pruebas exploratorias
 
 * `train_logreg.py`: entrenamiento inicial de regresión logística.
 * `train_rf.py`: entrenamiento inicial de Random Forest.
@@ -359,36 +451,26 @@ TFM/
 
 ### Optimización y evaluación final
 
-* `optimize_models.py`: optimización moderada de hiperparámetros mediante validación cruzada.
-* `train_final_models.py`: entrenamiento final con los mejores hiperparámetros y evaluación en test.
+* `gridsearch_final_models.py`: optimización final mediante `GridSearchCV` para los cuatro modelos, evaluación sobre test independiente y guardado de resultados.
+* `train_final_models.py`: entrenamiento final previo con mejores hiperparámetros y evaluación en test.
 
 ---
 
 ## Ejecución
 
-Desde la raíz del proyecto, primero se puede ejecutar la optimización moderada de hiperparámetros:
+Desde la raíz del proyecto, para ejecutar la optimización final mediante `GridSearchCV`:
 
 ```bash
-python3 Scripts/optimize_models.py
-```
-
-Después, para entrenar los modelos finales con los mejores hiperparámetros seleccionados:
-
-```bash
-python3 Scripts/train_final_models.py
+python3 Scripts/gridsearch_final_models.py
 ```
 
 Los resultados finales se guardan en:
 
 ```text
-results/
+results/gridsearch_final/
 ```
 
-Las predicciones finales se guardan en:
-
-```text
-predictions/
-```
+Para ejecutar scripts previos de entrenamiento o procesamiento, consultar la carpeta `Scripts/`.
 
 ---
 
@@ -430,8 +512,9 @@ Configuración principal:
 Para garantizar la reproducibilidad:
 
 * Se utilizó una división estratificada común de entrenamiento y prueba.
-* Se fijó `random_state=42`.
+* Se fijó `random_state=42` en los procesos de muestreo y modelado.
 * El preprocesamiento se integró dentro de objetos `Pipeline`.
+* La transformación de variables se realizó mediante `ColumnTransformer`.
 * La optimización de hiperparámetros se realizó únicamente sobre el conjunto de entrenamiento.
 * La evaluación final se realizó sobre un conjunto de prueba independiente.
 
@@ -442,15 +525,16 @@ Para garantizar la reproducibilidad:
 Aunque los modelos alcanzaron un rendimiento elevado, deben considerarse varias limitaciones:
 
 * Posible sesgo inherente a ClinVar.
-* Dataset balanceado artificialmente.
+* Conjunto de datos balanceado artificialmente.
 * Ausencia de validación externa independiente.
 * Posible sesgo por genes y regiones clínicas sobrerrepresentadas.
 * Diferencias entre variantes recogidas en bases de datos clínicas y variantes observadas en cohortes reales.
-* La buena capacidad predictiva en este dataset no garantiza necesariamente el mismo rendimiento sobre variantes nuevas o genes menos estudiados.
+* La buena capacidad predictiva en este conjunto de datos no garantiza necesariamente el mismo rendimiento sobre variantes nuevas, genes menos estudiados o cohortes clínicas independientes.
+* Las predicciones generadas por los modelos deben interpretarse como apoyo a la priorización computacional y no como una clasificación clínica definitiva.
 
 ---
 
 ## Autor
 
-Miguel Grande Falceto  
+Miguel Grande Falceto
 Máster Universitario en Bioinformática – UNIR
