@@ -41,10 +41,3 @@ print(df_final["label"].value_counts())
 print(df_final["consequence"].value_counts())
 
 df_final.to_csv("dataset_v1_balanced.csv", index=False)
-# Limitar synonymous para evitar sesgo
-syn_df = df[df["consequence"] == "synonymous_variant"]
-other_df = df[df["consequence"] != "synonymous_variant"]
-
-syn_df = syn_df.sample(n=min(len(syn_df), 10000), random_state=42)
-
-df = pd.concat([syn_df, other_df])
