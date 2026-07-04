@@ -107,14 +107,35 @@ Posteriormente, este archivo se convirtió a formato VCF para su anotación func
 
 ### 6. Anotación funcional con VEP
 
-Las variantes seleccionadas se anotaron mediante Ensembl Variant Effect Predictor.
+Las variantes seleccionadas se anotaron mediante Ensembl Variant Effect Predictor (VEP).
 
 Configuración general:
 
 * Herramienta: Ensembl Variant Effect Predictor.
 * Versión: VEP v115.
-* Ensamblado: GRCh38.
+* Ensamblado de referencia: GRCh38.
+* Especie: `homo_sapiens`.
 * Ejecución en modo offline con caché local.
+* Procesamiento paralelo mediante 4 procesos.
+
+El comando utilizado para la anotación fue:
+
+```bash
+~/ensembl-vep/vep \
+  -i dataset_v1_sorted.vcf \
+  -o dataset_v1_vep.txt \
+  --cache \
+  --offline \
+  --assembly GRCh38 \
+  --species homo_sapiens \
+  --tab \
+  --symbol \
+  --sift b \
+  --polyphen b \
+  --fork 4 \
+  --no_stats \
+  --force_overwrite
+```
 
 Variables funcionales extraídas:
 
@@ -124,10 +145,10 @@ Variables funcionales extraídas:
 * SIFT.
 * PolyPhen.
 
-Tras procesar la salida de VEP y combinarla con la información clínica inicial, se generó el conjunto final utilizado para machine learning:
+La salida generada por VEP se procesó posteriormente y se combinó con la información clínica inicial. A partir de este proceso se construyó el conjunto de datos final utilizado para el entrenamiento y evaluación de los modelos de aprendizaje automático:
 
 ```text
-Data/dataset_ml_ready.csv
+data/dataset_ml_ready.csv
 ```
 
 ### 7. Preparación de variables para machine learning

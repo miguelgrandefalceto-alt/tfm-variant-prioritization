@@ -1,7 +1,7 @@
-pandas
-numpy
-scipy
-scikit-learn
-xgboost
-matplotlib
-seaborn
+pandas==2.3.3
+numpy==2.2.6
+scipy==1.15.3
+scikit-learn==1.7.2
+xgboost==3.2.0
+matplotlib==3.10.9
+seaborn==0.13.2

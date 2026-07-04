@@ -1,11 +1,15 @@
 import pandas as pd
+from pathlib import Path
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-X_train = pd.read_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/X_train.csv")
-X_test = pd.read_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/X_test.csv")
-y_train = pd.read_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/y_train.csv").values.ravel()
-y_test = pd.read_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/y_test.csv").values.ravel()
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_DIR / "data"
+
+X_train = pd.read_csv(DATA_DIR / "X_train.csv")
+X_test = pd.read_csv(DATA_DIR / "X_test.csv")
+y_train = pd.read_csv(DATA_DIR / "y_train.csv").values.ravel()
+y_test = pd.read_csv(DATA_DIR / "y_test.csv").values.ravel()
 
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)

@@ -66,8 +66,8 @@ warnings.filterwarnings("ignore")
 
 RANDOM_STATE = 42
 
-PROJECT_DIR = Path("/mnt/c/Users/Usuario/Desktop/UNIR/TFM")
-DATA_PATH = PROJECT_DIR / "Data" / "dataset_ml_ready.csv"
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+DATA_PATH = PROJECT_DIR / "data" / "dataset_ml_ready.csv"
 
 RESULTS_DIR = PROJECT_DIR / "results" / "gridsearch_final"
 PREDICTIONS_DIR = RESULTS_DIR / "predictions"

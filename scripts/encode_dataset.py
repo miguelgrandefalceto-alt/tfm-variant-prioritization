@@ -1,8 +1,11 @@
 import pandas as pd
+from pathlib import Path
 from sklearn.model_selection import train_test_split
 
 # Cargar dataset
-df = pd.read_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/dataset_ml_ready.csv")
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_DIR / "data"
+df = pd.read_csv(DATA_DIR / "dataset_ml_ready.csv")
 
 # Target
 y = df["label"]
@@ -48,11 +51,11 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-# Guardar con rutas absolutas
-X_train.to_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/X_train.csv", index=False)
-X_test.to_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/X_test.csv", index=False)
-y_train.to_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/y_train.csv", index=False)
-y_test.to_csv("/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Dataset/y_test.csv", index=False)
+# Guardar con rutas relativas
+X_train.to_csv(DATA_DIR / "X_train.csv", index=False)
+X_test.to_csv(DATA_DIR / "X_test.csv", index=False)
+y_train.to_csv(DATA_DIR / "y_train.csv", index=False)
+y_test.to_csv(DATA_DIR / "y_test.csv", index=False)
 
 print("X_train:", X_train.shape)
 print("X_test:", X_test.shape)

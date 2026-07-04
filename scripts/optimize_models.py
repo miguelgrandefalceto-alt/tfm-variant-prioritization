@@ -35,10 +35,12 @@ warnings.filterwarnings("ignore")
 # CONFIGURACIÓN GENERAL
 # ============================================================
 
-DATA_PATH = "/mnt/c/Users/Usuario/Desktop/UNIR/TFM/Data/dataset_ml_ready.csv"
+PROJECT_DIR = Path(__file__).resolve().parents[1]
 
-RESULTS_BASE_DIR = "results"
-PREDICTIONS_BASE_DIR = "predictions"
+DATA_PATH = PROJECT_DIR / "data" / "dataset_ml_ready.csv"
+
+RESULTS_BASE_DIR = PROJECT_DIR / "results"
+PREDICTIONS_BASE_DIR = PROJECT_DIR / "predictions"
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
