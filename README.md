@@ -479,65 +479,111 @@ TFM/
 
 ## Ejecución
 
-Desde la raíz del proyecto, para ejecutar la optimización final mediante `GridSearchCV`:
+### Reproducción del flujo de trabajo
+
+Los siguientes pasos resumen el orden general utilizado para construir el conjunto de datos, realizar la anotación funcional y ejecutar la evaluación final de los modelos.
+
+Desde la raíz del repositorio, el procesamiento inicial de las variantes se realiza mediante:
 
 ```bash
-python3 Scripts/gridsearch_final_models.py
+python3 scripts/clean_clinvar.py
+python3 scripts/build_dataset_v1.py
+python3 scripts/csv_to_vcf.py
 ```
 
-Los resultados finales se guardan en:
+A continuación, las variantes seleccionadas se anotan mediante Ensembl Variant Effect Predictor v115 en modo offline:
+
+```bash
+~/ensembl-vep/vep \
+  -i dataset_v1_sorted.vcf \
+  -o dataset_v1_vep.txt \
+  --cache \
+  --offline \
+  --assembly GRCh38 \
+  --species homo_sapiens \
+  --tab \
+  --symbol \
+  --sift b \
+  --polyphen b \
+  --fork 4 \
+  --no_stats \
+  --force_overwrite
+```
+
+La salida de VEP se procesa y se integra con la información clínica y genómica mediante:
+
+```bash
+python3 scripts/process_vep.py
+python3 scripts/merge_ml_dataset.py
+```
+
+El conjunto de datos final utilizado en los análisis se encuentra en:
+
+```text
+data/dataset_ml_ready.csv
+```
+
+Para ejecutar la optimización final mediante `GridSearchCV` y la evaluación sobre el conjunto de prueba:
+
+```bash
+python3 scripts/gridsearch_final_models.py
+```
+
+Los resultados finales se almacenan en:
 
 ```text
 results/gridsearch_final/
 ```
 
-Para ejecutar scripts previos de entrenamiento o procesamiento, consultar la carpeta `Scripts/`.
+Los scripts `encode_dataset.py`, `train_logreg.py`, `train_rf.py`, `train_xgboost.py`, `train_svm.py`, `train_svm_rbf_sample.py`, `optimize_models.py` y `train_final_models.py` corresponden a etapas previas, análisis exploratorios o versiones intermedias del flujo de modelado.
 
 ---
 
 ## Requisitos
 
-Instalar dependencias:
+El proyecto fue desarrollado con Python 3.10.12.
 
-```bash
-pip install -r requirements.txt
-```
-
-Contenido de `requirements.txt`:
+Las dependencias principales se encuentran fijadas en `requirements.txt`:
 
 ```text
-pandas
-numpy
-scikit-learn
-xgboost
-matplotlib
-seaborn
-scipy
+pandas==2.3.3
+numpy==2.2.6
+scipy==1.15.3
+scikit-learn==1.7.2
+xgboost==3.2.0
+matplotlib==3.10.9
+seaborn==0.13.2
 ```
+
+Las dependencias pueden instalarse mediante:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+La anotación funcional requiere una instalación local de Ensembl Variant Effect Predictor v115 y la caché correspondiente a `homo_sapiens` para el ensamblado GRCh38.
 
 ---
 
 ## Reproducibilidad
 
-El proyecto fue desarrollado en entorno Linux mediante WSL/Ubuntu.
+El proyecto fue desarrollado en un entorno Linux mediante WSL y Ubuntu 22.04, utilizando Python 3.10.12.
 
-Configuración principal:
+Para favorecer la reproducibilidad del análisis:
 
-* Python 3.
-* scikit-learn.
-* XGBoost.
-* Ensembl VEP v115.
-* Ensamblado GRCh38.
-* VEP ejecutado en modo offline con caché local.
+* las rutas utilizadas por los scripts principales se definen de forma relativa a la raíz del repositorio;
+* se utilizó una división estratificada común de entrenamiento y prueba;
+* se fijó `random_state=42` en los procesos de muestreo y modelado;
+* el preprocesamiento se integró dentro de objetos `Pipeline`;
+* la transformación de variables se realizó mediante `ColumnTransformer`;
+* la imputación, el escalado y la codificación de variables categóricas se aplicaron dentro del pipeline;
+* la optimización de hiperparámetros se realizó únicamente sobre el conjunto de entrenamiento mediante validación cruzada estratificada;
+* la evaluación final se realizó sobre un conjunto de prueba separado de la fase de optimización;
+* las versiones de las principales dependencias se encuentran fijadas en `requirements.txt`;
+* la configuración utilizada para la anotación funcional con VEP se documenta en este README.
 
-Para garantizar la reproducibilidad:
+La estructura del repositorio, los scripts de procesamiento y los archivos de resultados permiten seguir las principales etapas del flujo de trabajo desarrollado.
 
-* Se utilizó una división estratificada común de entrenamiento y prueba.
-* Se fijó `random_state=42` en los procesos de muestreo y modelado.
-* El preprocesamiento se integró dentro de objetos `Pipeline`.
-* La transformación de variables se realizó mediante `ColumnTransformer`.
-* La optimización de hiperparámetros se realizó únicamente sobre el conjunto de entrenamiento.
-* La evaluación final se realizó sobre un conjunto de prueba independiente.
 
 ---
 
