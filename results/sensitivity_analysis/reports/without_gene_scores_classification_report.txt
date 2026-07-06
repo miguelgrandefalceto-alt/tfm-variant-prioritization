@@ -1,0 +1,19 @@
+Model: Logistic Regression - without_gene_scores
+
+Classification report
+=====================
+
+                              precision    recall  f1-score   support
+
+        Benign/Likely benign     0.9921    0.8590    0.9208      7000
+Pathogenic/Likely pathogenic     0.8757    0.9931    0.9307      7000
+
+                    accuracy                         0.9261     14000
+                   macro avg     0.9339    0.9261    0.9257     14000
+                weighted avg     0.9339    0.9261    0.9257     14000
+
+
+Confusion matrix
+================
+[[6013  987]
+ [  48 6952]]

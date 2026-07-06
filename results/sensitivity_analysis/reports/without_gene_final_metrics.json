@@ -1,0 +1,10 @@
+{
+    "model": "Logistic Regression - without_gene",
+    "accuracy": 0.9629285714285715,
+    "precision_macro": 0.9633656954953933,
+    "recall_macro": 0.9629285714285715,
+    "f1_macro": 0.9629198263723167,
+    "precision_weighted": 0.9633656954953933,
+    "recall_weighted": 0.9629285714285715,
+    "f1_weighted": 0.9629198263723167
+}
