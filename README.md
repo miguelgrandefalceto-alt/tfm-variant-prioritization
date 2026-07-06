@@ -381,6 +381,45 @@ La SVM lineal eficiente obtuvo el menor rendimiento global, pero presentó el me
 
 En conjunto, los resultados indican que las variables genómicas, funcionales y de anotación utilizadas contienen una señal discriminativa suficiente para diferenciar variantes benignas y patogénicas en el conjunto de datos construido. Sin embargo, estos resultados deben interpretarse teniendo en cuenta las limitaciones del conjunto de datos, especialmente el uso de variantes procedentes de ClinVar, el balanceo artificial y la ausencia de validación externa independiente.
 
+
+## Análisis de sensibilidad de las variables predictoras
+
+Como análisis complementario, se evaluó la sensibilidad del modelo de regresión logística a la exclusión de variables que podían contribuir de forma importante al rendimiento observado.
+
+Se compararon tres configuraciones utilizando el mismo conjunto de datos, la misma división estratificada de entrenamiento y prueba (`80/20`, `random_state=42`) y el mismo procedimiento de optimización mediante `GridSearchCV` con validación cruzada estratificada de 3 particiones:
+
+1. `full_model`: modelo completo con las 11 variables predictoras utilizadas en el análisis principal.
+2. `without_gene`: modelo sin la variable categórica `gene`.
+3. `without_gene_scores`: modelo sin `gene`, `sift_score` y `polyphen_score`.
+
+Los resultados obtenidos fueron:
+
+| Configuración         | Nº de predictores | F1-macro CV | Accuracy test | F1-macro test |
+| --------------------- | ----------------: | ----------: | ------------: | ------------: |
+| `full_model`          |                11 |      0.9701 |        0.9721 |        0.9721 |
+| `without_gene`        |                10 |      0.9637 |        0.9629 |        0.9629 |
+| `without_gene_scores` |                 8 |      0.9246 |        0.9261 |        0.9257 |
+
+La exclusión de `gene` produjo una reducción moderada del rendimiento, con un descenso del F1-macro de 0.9721 a 0.9629. Este resultado indica que la identidad del gen aporta información al modelo, aunque la capacidad discriminativa se mantiene elevada en ausencia de esta variable.
+
+La eliminación adicional de `sift_score` y `polyphen_score` produjo una disminución más marcada del rendimiento, hasta un F1-macro de 0.9257. Esto sugiere que las puntuaciones funcionales derivadas de SIFT y PolyPhen contienen una señal relevante para la clasificación.
+
+No obstante, el modelo mantuvo un rendimiento superior a 0,92 incluso sin `gene`, SIFT y PolyPhen, lo que indica que las variables genómicas y de anotación funcional restantes también aportan información discriminativa.
+
+El análisis completo se implementó mediante:
+
+```bash
+python3 scripts/sensitivity_analysis_logreg.py
+```
+
+Los resultados se almacenan en:
+
+```text
+results/sensitivity_analysis/
+```
+
+Esta carpeta incluye los parámetros óptimos, resultados de validación cruzada, predicciones, matrices de confusión, informes de clasificación y el resumen comparativo final.
+
 ---
 
 ## Archivos de resultados
