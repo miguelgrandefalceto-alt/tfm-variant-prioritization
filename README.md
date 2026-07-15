@@ -424,13 +424,29 @@ Esta carpeta incluye los parámetros óptimos, resultados de validación cruzada
 
 ## Archivos de resultados
 
-Los resultados finales de la optimización mediante `GridSearchCV` se almacenan en:
+Los resultados generados durante el desarrollo del proyecto se almacenan en el directorio:
+
+```text
+results/
+```
+
+Las principales subcarpetas son:
+
+```text
+gridsearch_final/
+sensitivity_analysis/
+archive_initial_models/
+```
+
+### Resultados finales
+
+La carpeta:
 
 ```text
 results/gridsearch_final/
 ```
 
-Esta carpeta incluye:
+contiene los resultados correspondientes al análisis principal presentado en el manuscrito, incluyendo:
 
 ```text
 final_gridsearch_model_comparison_summary.csv
@@ -440,49 +456,50 @@ reports/
 predictions/
 ```
 
-Archivo comparativo principal:
+El archivo comparativo principal es:
 
 ```text
 results/gridsearch_final/final_gridsearch_model_comparison_summary.csv
 ```
+
+### Análisis de sensibilidad
+
+La carpeta:
+
+```text
+results/sensitivity_analysis/
+```
+
+contiene los resultados del análisis de sensibilidad realizado con regresión logística, incluyendo los mejores hiperparámetros, los resultados de la validación cruzada, las predicciones y el resumen comparativo de las tres configuraciones evaluadas.
 
 ---
 
 ## Estructura del repositorio
 
 ```text
-TFM/
-├── Data/
-│   └── dataset_ml_ready.csv
-│
-├── Scripts/
-│   ├── build_dataset_v1.py
-│   ├── clean_clinvar.py
-│   ├── csv_to_vcf.py
-│   ├── encode_dataset.py
-│   ├── gridsearch_final_models.py
-│   ├── merge_ml_dataset.py
-│   ├── process_vep.py
-│   ├── train_final_models.py
-│   ├── train_logreg.py
-│   ├── train_rf.py
-│   ├── train_svm.py
-│   ├── train_svm_rbf_sample.py
-│   └── train_xgboost.py
+tfm-variant-prioritization/
+├── data/
+│   ├── dataset_ml_ready.csv          # Dataset final utilizado para el entrenamiento
+│   ├── X_train.csv                   # Conjunto de entrenamiento codificado
+│   ├── X_test.csv                    # Conjunto de prueba codificado
+│   ├── y_train.csv                   # Etiquetas de entrenamiento
+│   └── y_test.csv                    # Etiquetas de prueba
 │
 ├── results/
-│   ├── gridsearch_final/
-│   ├── logistic_regression/
-│   ├── random_forest/
-│   ├── svm_linear/
-│   ├── svm_rbf_sample/
-│   └── xgboost/
+│   ├── gridsearch_final/             # Resultados finales de la optimización
+│   ├── sensitivity_analysis/         # Análisis de sensibilidad
+│   └── archive_initial_models/       # Resultados preliminares
 │
-├── predictions/
-│   ├── logistic_regression/
-│   ├── random_forest/
-│   ├── svm_linear/
-│   └── xgboost/
+├── scripts/
+│   ├── clean_clinvar.py
+│   ├── build_dataset_v1.py
+│   ├── csv_to_vcf.py
+│   ├── process_vep.py
+│   ├── merge_ml_dataset.py
+│   ├── encode_dataset.py
+│   ├── gridsearch_final_models.py
+│   ├── sensitivity_analysis_logreg.py
+│   └── train_*.py                    # Scripts de entrenamiento individuales
 │
 ├── README.md
 └── requirements.txt
@@ -494,25 +511,27 @@ TFM/
 
 ### Construcción y procesamiento del conjunto de datos
 
-* `clean_clinvar.py`: limpia y filtra variantes procedentes de ClinVar.
-* `build_dataset_v1.py`: construye el conjunto inicial balanceado.
-* `csv_to_vcf.py`: convierte variantes seleccionadas a formato VCF.
-* `process_vep.py`: procesa la salida de VEP.
-* `merge_ml_dataset.py`: fusiona información clínica, genómica y funcional.
-* `encode_dataset.py`: prepara versiones codificadas del conjunto de datos.
+- `clean_clinvar.py`: limpia y filtra las variantes procedentes de ClinVar.
+- `build_dataset_v1.py`: construye el conjunto inicial balanceado de variantes.
+- `csv_to_vcf.py`: convierte las variantes seleccionadas al formato VCF.
+- `process_vep.py`: procesa la anotación funcional obtenida con Ensembl VEP.
+- `merge_ml_dataset.py`: integra la información clínica, genómica y funcional en el conjunto de datos final.
+- `encode_dataset.py`: genera las versiones codificadas del conjunto de datos utilizadas en los experimentos iniciales.
 
-### Entrenamiento inicial y pruebas exploratorias
+### Desarrollo y entrenamiento de modelos
 
-* `train_logreg.py`: entrenamiento inicial de regresión logística.
-* `train_rf.py`: entrenamiento inicial de Random Forest.
-* `train_xgboost.py`: entrenamiento inicial de XGBoost.
-* `train_svm.py`: entrenamiento de SVM lineal eficiente.
-* `train_svm_rbf_sample.py`: prueba exploratoria de SVM RBF sobre muestra reducida.
+- `train_logreg.py`: entrenamiento inicial del modelo de regresión logística.
+- `train_rf.py`: entrenamiento inicial de Random Forest.
+- `train_xgboost.py`: entrenamiento inicial de XGBoost.
+- `train_svm.py`: entrenamiento del modelo SVM lineal basado en `SGDClassifier`.
+- `train_svm_rbf_sample.py`: evaluación exploratoria de un SVM con núcleo RBF sobre una muestra reducida.
+- `train_final_models.py`: entrenamiento y evaluación con los mejores hiperparámetros obtenidos durante el desarrollo.
+- `optimize_models.py`: optimización preliminar de hiperparámetros utilizada durante las fases iniciales del proyecto.
 
-### Optimización y evaluación final
+### Análisis finales
 
-* `gridsearch_final_models.py`: optimización final mediante `GridSearchCV` para los cuatro modelos, evaluación sobre test independiente y guardado de resultados.
-* `train_final_models.py`: entrenamiento final previo con mejores hiperparámetros y evaluación en test.
+- `gridsearch_final_models.py`: **script principal del proyecto**, utilizado para reproducir los resultados presentados en el manuscrito. Implementa la optimización mediante `GridSearchCV`, la validación cruzada estratificada y la evaluación final sobre el conjunto de prueba independiente.
+- `sensitivity_analysis_logreg.py`: análisis de sensibilidad mediante regresión logística para evaluar la contribución de las variables predictoras (`gene`, `sift_score` y `polyphen_score`).
 
 ---
 
@@ -520,7 +539,7 @@ TFM/
 
 ### Reproducción del flujo de trabajo
 
-Los siguientes pasos resumen el orden general utilizado para construir el conjunto de datos, realizar la anotación funcional y ejecutar la evaluación final de los modelos.
+Los siguientes pasos resumen el flujo de trabajo empleado para construir el conjunto de datos, realizar la anotación funcional y reproducir los resultados principales del estudio.
 
 Desde la raíz del repositorio, el procesamiento inicial de las variantes se realiza mediante:
 
@@ -530,7 +549,7 @@ python3 scripts/build_dataset_v1.py
 python3 scripts/csv_to_vcf.py
 ```
 
-A continuación, las variantes seleccionadas se anotan mediante Ensembl Variant Effect Predictor v115 en modo offline:
+Posteriormente, las variantes seleccionadas se anotan mediante **Ensembl Variant Effect Predictor (VEP) v115** en modo *offline*:
 
 ```bash
 ~/ensembl-vep/vep \
@@ -549,38 +568,50 @@ A continuación, las variantes seleccionadas se anotan mediante Ensembl Variant 
   --force_overwrite
 ```
 
-La salida de VEP se procesa y se integra con la información clínica y genómica mediante:
+La salida de VEP se procesa e integra con la información clínica y genómica mediante:
 
 ```bash
 python3 scripts/process_vep.py
 python3 scripts/merge_ml_dataset.py
 ```
 
-El conjunto de datos final utilizado en los análisis se encuentra en:
+El conjunto de datos final utilizado para el entrenamiento y la evaluación de los modelos corresponde a:
 
 ```text
 data/dataset_ml_ready.csv
 ```
 
-Para ejecutar la optimización final mediante `GridSearchCV` y la evaluación sobre el conjunto de prueba:
+Los resultados principales del TFM pueden reproducirse ejecutando:
 
 ```bash
 python3 scripts/gridsearch_final_models.py
 ```
 
-Los resultados finales se almacenan en:
+Los resultados generados se almacenan en:
 
 ```text
 results/gridsearch_final/
 ```
 
-Los scripts `encode_dataset.py`, `train_logreg.py`, `train_rf.py`, `train_xgboost.py`, `train_svm.py`, `train_svm_rbf_sample.py`, `optimize_models.py` y `train_final_models.py` corresponden a etapas previas, análisis exploratorios o versiones intermedias del flujo de modelado.
+El análisis de sensibilidad presentado en el manuscrito puede reproducirse mediante:
+
+```bash
+python3 scripts/sensitivity_analysis_logreg.py
+```
+
+Los resultados correspondientes se almacenan en:
+
+```text
+results/sensitivity_analysis/
+```
+
+Los scripts `encode_dataset.py`, `train_logreg.py`, `train_rf.py`, `train_xgboost.py`, `train_svm.py`, `train_svm_rbf_sample.py`, `train_final_models.py` y `optimize_models.py` corresponden a fases previas del desarrollo, experimentos exploratorios o versiones intermedias conservadas con fines de reproducibilidad.
 
 ---
 
 ## Requisitos
 
-El proyecto fue desarrollado con Python 3.10.12.
+El proyecto fue desarrollado con **Python 3.10.12**.
 
 Las dependencias principales se encuentran fijadas en `requirements.txt`:
 
@@ -600,47 +631,46 @@ Las dependencias pueden instalarse mediante:
 python3 -m pip install -r requirements.txt
 ```
 
-La anotación funcional requiere una instalación local de Ensembl Variant Effect Predictor v115 y la caché correspondiente a `homo_sapiens` para el ensamblado GRCh38.
+La anotación funcional requiere una instalación local de **Ensembl Variant Effect Predictor (VEP) v115**, junto con la caché correspondiente a *Homo sapiens* para el ensamblado **GRCh38**.
 
 ---
 
 ## Reproducibilidad
 
-El proyecto fue desarrollado en un entorno Linux mediante WSL y Ubuntu 22.04, utilizando Python 3.10.12.
+El proyecto fue desarrollado en un entorno Linux mediante **WSL** con **Ubuntu 22.04**, utilizando **Python 3.10.12**.
 
 Para favorecer la reproducibilidad del análisis:
 
-* las rutas utilizadas por los scripts principales se definen de forma relativa a la raíz del repositorio;
-* se utilizó una división estratificada común de entrenamiento y prueba;
-* se fijó `random_state=42` en los procesos de muestreo y modelado;
-* el preprocesamiento se integró dentro de objetos `Pipeline`;
-* la transformación de variables se realizó mediante `ColumnTransformer`;
-* la imputación, el escalado y la codificación de variables categóricas se aplicaron dentro del pipeline;
-* la optimización de hiperparámetros se realizó únicamente sobre el conjunto de entrenamiento mediante validación cruzada estratificada;
-* la evaluación final se realizó sobre un conjunto de prueba separado de la fase de optimización;
-* las versiones de las principales dependencias se encuentran fijadas en `requirements.txt`;
-* la configuración utilizada para la anotación funcional con VEP se documenta en este README.
+- las rutas empleadas por los scripts principales se definen de forma relativa a la raíz del repositorio;
+- se utilizó una división estratificada fija de entrenamiento y prueba (`random_state=42`);
+- el preprocesamiento se integró dentro de objetos `Pipeline`;
+- la transformación de variables se realizó mediante `ColumnTransformer`;
+- la imputación, el escalado y la codificación de variables categóricas se aplicaron exclusivamente dentro del pipeline;
+- la optimización de hiperparámetros se realizó únicamente sobre el conjunto de entrenamiento mediante validación cruzada estratificada (`GridSearchCV`);
+- la evaluación final se llevó a cabo sobre un conjunto de prueba independiente, no utilizado durante la optimización;
+- las versiones de las principales dependencias se encuentran fijadas en `requirements.txt`;
+- la configuración utilizada para la anotación funcional con VEP se documenta en este README.
 
-La estructura del repositorio, los scripts de procesamiento y los archivos de resultados permiten seguir las principales etapas del flujo de trabajo desarrollado.
-
+La estructura del repositorio, los scripts de procesamiento y los archivos de resultados permiten reproducir las principales etapas del flujo de trabajo desarrollado.
 
 ---
 
 ## Limitaciones
 
-Aunque los modelos alcanzaron un rendimiento elevado, deben considerarse varias limitaciones:
+Aunque los modelos alcanzaron un rendimiento elevado sobre el conjunto de datos utilizado, deben considerarse varias limitaciones:
 
-* Posible sesgo inherente a ClinVar.
-* Conjunto de datos balanceado artificialmente.
-* Ausencia de validación externa independiente.
-* Posible sesgo por genes y regiones clínicas sobrerrepresentadas.
-* Diferencias entre variantes recogidas en bases de datos clínicas y variantes observadas en cohortes reales.
-* La buena capacidad predictiva en este conjunto de datos no garantiza necesariamente el mismo rendimiento sobre variantes nuevas, genes menos estudiados o cohortes clínicas independientes.
-* Las predicciones generadas por los modelos deben interpretarse como apoyo a la priorización computacional y no como una clasificación clínica definitiva.
+- posible sesgo inherente a ClinVar;
+- conjunto de datos artificialmente balanceado;
+- ausencia de validación externa independiente;
+- posible sobrerrepresentación de determinados genes y regiones genómicas;
+- diferencias entre las variantes recogidas en bases de datos clínicas y las observadas en cohortes reales;
+- el rendimiento obtenido en este conjunto de datos no garantiza necesariamente un comportamiento equivalente sobre variantes nuevas, genes menos estudiados o cohortes clínicas independientes;
+- las predicciones generadas por los modelos deben interpretarse como apoyo a la priorización computacional de variantes y no como una clasificación clínica definitiva.
 
 ---
 
 ## Autor
 
-Miguel Grande Falceto
+**Miguel Grande Falceto**
+
 Máster Universitario en Bioinformática – UNIR
