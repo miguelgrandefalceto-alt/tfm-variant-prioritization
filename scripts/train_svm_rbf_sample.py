@@ -11,7 +11,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 
-DATA_PATH = "Data/dataset_ml_ready.csv"
+DATA_PATH = "data/dataset_ml_ready.csv"
 RESULTS_DIR = "results"
 PREDICTIONS_DIR = "results/predictions"
 
