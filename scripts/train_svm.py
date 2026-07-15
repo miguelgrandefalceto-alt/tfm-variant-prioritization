@@ -15,7 +15,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 # Rutas
 # =========================
 
-DATA_PATH = "Data/dataset_ml_ready.csv"
+DATA_PATH = "data/dataset_ml_ready.csv"
 RESULTS_DIR = "results"
 PREDICTIONS_DIR = "results/predictions"
 
