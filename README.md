@@ -118,6 +118,12 @@ Configuración general:
 * Ejecución en modo offline con caché local.
 * Procesamiento paralelo mediante 4 procesos.
 
+El archivo VCF generado se ordenó por cromosoma y posición antes de la anotación funcional:
+
+```bash
+(head -n 2 dataset_v1.vcf && tail -n +3 dataset_v1.vcf | sort -k1,1V -k2,2n) > dataset_v1_sorted.vcf
+```
+
 El comando utilizado para la anotación fue:
 
 ```bash
@@ -139,11 +145,11 @@ El comando utilizado para la anotación fue:
 
 Variables funcionales extraídas:
 
-* Gen (`SYMBOL`).
-* Consecuencia funcional.
-* Impacto funcional.
-* SIFT.
-* PolyPhen.
+* Gen (SYMBOL)
+* Consecuencia molecular
+* Impacto funcional
+* Puntuación SIFT
+* Puntuación PolyPhen
 
 La salida generada por VEP se procesó posteriormente y se combinó con la información clínica inicial. A partir de este proceso se construyó el conjunto de datos final utilizado para el entrenamiento y evaluación de los modelos de aprendizaje automático:
 
@@ -189,7 +195,7 @@ La variable `label` se utilizó como variable objetivo, mientras que `variant` y
 El conjunto de datos final utilizado para el entrenamiento y evaluación de los modelos se encuentra en:
 
 ```text
-Data/dataset_ml_ready.csv
+data/dataset_ml_ready.csv
 ```
 
 Características principales:
@@ -651,7 +657,7 @@ Para favorecer la reproducibilidad del análisis:
 - las versiones de las principales dependencias se encuentran fijadas en `requirements.txt`;
 - la configuración utilizada para la anotación funcional con VEP se documenta en este README.
 
-La estructura del repositorio, los scripts de procesamiento y los archivos de resultados permiten reproducir las principales etapas del flujo de trabajo desarrollado.
+La estructura del repositorio, los scripts de procesamiento y los archivos de resultados permiten reproducir las principales etapas del flujo de trabajo descrito en este repositorio.
 
 ---
 
